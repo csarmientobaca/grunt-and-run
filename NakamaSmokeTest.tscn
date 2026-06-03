@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://d0wh7h8fbiebj"]
+
+[ext_resource type="Script" path="res://NakamaSmokeTest.gd" id="1_smoke"]
+
+[node name="NakamaSmokeTest" type="Node" unique_id=1968981097]
+script = ExtResource("1_smoke")
