@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://0e02ixipbjtu" path="res://scenes/smoke/NakamaSdkSmokeTest.gd" id="1_sdk_smoke"]
+
+[node name="NakamaSdkSmokeTest" type="Node"]
+script = ExtResource("1_sdk_smoke")

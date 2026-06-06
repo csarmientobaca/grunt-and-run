@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="grunt-and-run"
-run/main_scene="res://NakamaSdkSmokeTest.tscn"
+run/main_scene="res://scenes/smoke/NakamaSdkSmokeTest.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://assets/icons/icon.svg"
 
 [autoload]
 
 Nakama="*res://addons/com.heroiclabs.nakama/Nakama.gd"
+NakamaService="*res://scripts/network/NakamaService.gd"
 
 [physics]
 
