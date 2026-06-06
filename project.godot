@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="grunt-and-run"
-run/main_scene="res://scenes/smoke/NakamaSdkSmokeTest.tscn"
+run/main_scene="res://scenes/boot/Boot.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://assets/icons/icon.svg"
 

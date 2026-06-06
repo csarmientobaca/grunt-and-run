@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cia2nt5fitu5w"]
+
+[ext_resource type="Script" uid="uid://bp7kkaawprvfg" path="res://scenes/dashboard/Dashboard.gd" id="1_cwp25"]
+
+[node name="Dashboard" type="Control" unique_id=755506430]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_cwp25")
