@@ -1,0 +1,54 @@
+[gd_scene load_steps=2 format=3 uid="uid://b33ker0s8yimw"]
+
+[ext_resource type="Script" uid="uid://be5l70wojqs3c" path="res://scenes/character_creation/CharacterCreation.gd" id="1_t3mge"]
+
+[node name="CharacterCreation" type="Control" unique_id=1093133357]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_t3mge")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=897931704]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = -32.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=2113405655]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=151642479]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Create Character"
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer" unique_id=567204038]
+layout_mode = 2
+placeholder_text = "Character name"
+
+[node name="RaceLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1843906486]
+layout_mode = 2
+text = "Race"
+
+[node name="RaceOption" type="OptionButton" parent="MarginContainer/VBoxContainer" unique_id=1751400511]
+layout_mode = 2
+
+[node name="ClassLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=5038538]
+layout_mode = 2
+text = "Class"
+
+[node name="ClassOption" type="OptionButton" parent="MarginContainer/VBoxContainer" unique_id=1949095320]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1350079516]
+layout_mode = 2
+
+[node name="CreateButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=528822975]
+layout_mode = 2
+text = "Create Character"

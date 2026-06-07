@@ -4,7 +4,6 @@ const NAKAMA_HOST := "127.0.0.1"
 const NAKAMA_PORT := 7350
 const NAKAMA_SCHEME := "http"
 const SERVER_KEY := "defaultkey"
-const DEVICE_ID := "grunt-and-run-godot-smoke-test"
 
 var _client: NakamaClient
 var _session: NakamaSession
@@ -17,8 +16,9 @@ func connect_and_authenticate() -> bool:
 	if _session != null and _session.is_valid() and not _session.is_expired():
 		return true
 
-	print("SDK AUTH device_id=%s" % DEVICE_ID)
-	var session: NakamaSession = await _client.authenticate_device_async(DEVICE_ID)
+	var device_id: String = DevIdentity.get_device_id()
+	print("SDK AUTH device_id=%s" % device_id)
+	var session: NakamaSession = await _client.authenticate_device_async(device_id)
 	if session.is_exception():
 		print("NAKAMA AUTH FAILED")
 		print(session.get_exception())
@@ -30,6 +30,13 @@ func connect_and_authenticate() -> bool:
 	print("username: %s" % _session.username)
 	print("created: %s" % _session.created)
 	return true
+
+
+func reset_dev_identity() -> String:
+	_session = null
+	var device_id: String = DevIdentity.reset_device_id()
+	print("DEV IDENTITY RESET: %s" % device_id)
+	return device_id
 
 
 func get_character() -> Dictionary:

@@ -1,9 +1,12 @@
 extends Control
 
+const BOOT_SCENE := "res://scenes/boot/Boot.tscn"
+
 @onready var _character_label: Label = $MarginContainer/Content/CharacterLabel
 @onready var _progress_label: Label = $MarginContainer/Content/ProgressLabel
 @onready var _stats_label: Label = $MarginContainer/Content/StatsLabel
 @onready var _sections_label: Label = $MarginContainer/Content/SectionsLabel
+@onready var _reset_dev_player_button: Button = $MarginContainer/Content/ResetDevPlayerButton
 
 
 func _ready() -> void:
@@ -14,6 +17,7 @@ func _ready() -> void:
 	print("DASHBOARD DATA")
 	print(NakamaService.pretty(dashboard_result))
 
+	_reset_dev_player_button.pressed.connect(_on_reset_dev_player_button_pressed)
 	_render_dashboard(dashboard_result)
 
 
@@ -48,3 +52,10 @@ func _render_dashboard(dashboard_result: Dictionary) -> void:
 	]
 
 	_sections_label.text = "Available: %s" % ", ".join(section_names)
+
+
+func _on_reset_dev_player_button_pressed() -> void:
+	NakamaService.reset_dev_identity()
+	var error: Error = get_tree().change_scene_to_file(BOOT_SCENE)
+	if error != OK:
+		push_warning("Could not reload boot scene. Error: %s" % error)
