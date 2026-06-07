@@ -5,7 +5,7 @@ const BOOT_SCENE := "res://scenes/boot/Boot.tscn"
 @onready var _character_label: Label = $MarginContainer/Content/CharacterLabel
 @onready var _progress_label: Label = $MarginContainer/Content/ProgressLabel
 @onready var _stats_label: Label = $MarginContainer/Content/StatsLabel
-@onready var _sections_label: Label = $MarginContainer/Content/SectionsLabel
+@onready var _sections_grid: GridContainer = $MarginContainer/Content/SectionsGrid
 @onready var _reset_dev_player_button: Button = $MarginContainer/Content/ResetDevPlayerButton
 
 
@@ -35,9 +35,6 @@ func _render_dashboard(dashboard_result: Dictionary) -> void:
 	var stats: Dictionary = dashboard_result.get("stats", {})
 	var dashboard: Dictionary = dashboard_result.get("dashboard", {})
 	var sections: Array = dashboard.get("sections", [])
-	var section_names: PackedStringArray = []
-	for section: Variant in sections:
-		section_names.append(str(section))
 
 	_character_label.text = "%s | %s %s" % [
 		character.get("name", "Unknown Hero"),
@@ -60,7 +57,32 @@ func _render_dashboard(dashboard_result: Dictionary) -> void:
 		stats.get("vitality", 0),
 	]
 
-	_sections_label.text = "Available: %s" % ", ".join(section_names)
+	_render_section_buttons(sections)
+
+
+func _render_section_buttons(sections: Array) -> void:
+	for child: Node in _sections_grid.get_children():
+		child.queue_free()
+
+	for section: Variant in sections:
+		var section_id: String = str(section)
+		var button: Button = Button.new()
+		button.text = _format_section_label(section_id)
+		button.pressed.connect(func() -> void:
+			_on_section_button_pressed(section_id)
+		)
+		_sections_grid.add_child(button)
+
+
+func _format_section_label(section_id: String) -> String:
+	var words: PackedStringArray = section_id.split("_")
+	for index: int in words.size():
+		words[index] = words[index].capitalize()
+	return " ".join(words)
+
+
+func _on_section_button_pressed(section_id: String) -> void:
+	print("Opening section: %s" % section_id)
 
 
 func _on_reset_dev_player_button_pressed() -> void:

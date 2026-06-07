@@ -40,9 +40,13 @@ text = "Loading progress..."
 layout_mode = 2
 text = "Loading stats..."
 
-[node name="SectionsLabel" type="Label" parent="MarginContainer/Content" unique_name_in_owner=true]
+[node name="SectionsTitleLabel" type="Label" parent="MarginContainer/Content"]
 layout_mode = 2
-text = "Loading sections..."
+text = "Available Sections"
+
+[node name="SectionsGrid" type="GridContainer" parent="MarginContainer/Content"]
+layout_mode = 2
+columns = 2
 
 [node name="ResetDevPlayerButton" type="Button" parent="MarginContainer/Content"]
 layout_mode = 2
