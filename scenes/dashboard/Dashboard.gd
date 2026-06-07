@@ -13,12 +13,21 @@ func _ready() -> void:
 	print("")
 	print("=== Dashboard started ===")
 
-	var dashboard_result: Dictionary = await NakamaService.get_dashboard()
+	var dashboard_result: Dictionary = await _get_dashboard_data()
 	print("DASHBOARD DATA")
 	print(NakamaService.pretty(dashboard_result))
 
 	_reset_dev_player_button.pressed.connect(_on_reset_dev_player_button_pressed)
 	_render_dashboard(dashboard_result)
+
+
+func _get_dashboard_data() -> Dictionary:
+	if GameState.has_dashboard_data():
+		return GameState.dashboard_data
+
+	var dashboard_result: Dictionary = await NakamaService.get_dashboard()
+	GameState.set_dashboard_data(dashboard_result)
+	return dashboard_result
 
 
 func _render_dashboard(dashboard_result: Dictionary) -> void:
@@ -56,6 +65,7 @@ func _render_dashboard(dashboard_result: Dictionary) -> void:
 
 func _on_reset_dev_player_button_pressed() -> void:
 	NakamaService.reset_dev_identity()
+	GameState.clear()
 	var error: Error = get_tree().change_scene_to_file(BOOT_SCENE)
 	if error != OK:
 		push_warning("Could not reload boot scene. Error: %s" % error)

@@ -14,17 +14,22 @@ func _ready() -> void:
 		print("BOOT FAILED: could not authenticate with Nakama.")
 		return
 
-	print("Checking for existing character...")
-	var character_result: Dictionary = await NakamaService.get_character()
-	if NakamaService.is_character_not_found(character_result):
-		print("No character found. Next scene: Character Creation")
-		_go_to_scene_if_exists(CHARACTER_CREATION_SCENE)
-		return
+	print("Checking profile state...")
+	var profile_state: Dictionary = await NakamaService.get_profile_state()
+	GameState.set_profile_state(profile_state)
+	print("PROFILE STATE")
+	print(NakamaService.pretty(profile_state))
 
-	print("Character found.")
-	print(NakamaService.pretty(character_result))
-	print("Next scene: Dashboard")
-	_go_to_scene_if_exists(DASHBOARD_SCENE)
+	var next_screen: String = str(profile_state.get("next_screen", ""))
+	match next_screen:
+		"character_creation":
+			print("Next scene: Character Creation")
+			_go_to_scene_if_exists(CHARACTER_CREATION_SCENE)
+		"dashboard":
+			print("Next scene: Dashboard")
+			_go_to_scene_if_exists(DASHBOARD_SCENE)
+		_:
+			print("BOOT FAILED: unknown next_screen '%s'." % next_screen)
 
 
 func _go_to_scene_if_exists(scene_path: String) -> void:

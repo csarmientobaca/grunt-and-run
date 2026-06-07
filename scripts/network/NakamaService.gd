@@ -43,6 +43,10 @@ func get_character() -> Dictionary:
 	return await call_rpc("get_character")
 
 
+func get_profile_state() -> Dictionary:
+	return await call_rpc("get_profile_state")
+
+
 func create_character(character_name: String, race: String, character_class: String) -> Dictionary:
 	return await call_rpc("create_character", {
 		"name": character_name,

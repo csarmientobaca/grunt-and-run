@@ -19,6 +19,7 @@ config/icon="res://assets/icons/icon.svg"
 
 Nakama="*res://addons/com.heroiclabs.nakama/Nakama.gd"
 NakamaService="*res://scripts/network/NakamaService.gd"
+GameState="*res://scripts/state/GameState.gd"
 
 [physics]
 
