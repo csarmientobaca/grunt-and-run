@@ -1,6 +1,10 @@
 extends Control
 
 const BOOT_SCENE := "res://scenes/boot/Boot.tscn"
+const SECTION_SCENES := {
+	"character_tree": "res://scenes/character_tree/CharacterTree.tscn",
+	"mission_board": "res://scenes/mission_board/MissionBoard.tscn",
+}
 
 @onready var _character_label: Label = $MarginContainer/Content/CharacterLabel
 @onready var _progress_label: Label = $MarginContainer/Content/ProgressLabel
@@ -83,6 +87,14 @@ func _format_section_label(section_id: String) -> String:
 
 func _on_section_button_pressed(section_id: String) -> void:
 	print("Opening section: %s" % section_id)
+	if not SECTION_SCENES.has(section_id):
+		print("Section not built yet: %s" % section_id)
+		return
+
+	var scene_path: String = str(SECTION_SCENES[section_id])
+	var error: Error = get_tree().change_scene_to_file(scene_path)
+	if error != OK:
+		push_warning("Could not open section %s. Error: %s" % [section_id, error])
 
 
 func _on_reset_dev_player_button_pressed() -> void:
