@@ -2,45 +2,6 @@ extends Control
 
 const DASHBOARD_SCENE := "res://scenes/dashboard/Dashboard.tscn"
 
-const MISSIONS := [
-	{
-		"location_id": "dark_forest",
-		"location_name": "Dark Forest",
-		"mission_id": "dark_forest_scout_old_trail",
-		"title": "Scout the Old Trail",
-		"danger": 1,
-		"reward_gold": 10,
-		"recommended_level": 1,
-	},
-	{
-		"location_id": "dark_forest",
-		"location_name": "Dark Forest",
-		"mission_id": "dark_forest_recover_supplies",
-		"title": "Recover Lost Supplies",
-		"danger": 1,
-		"reward_gold": 12,
-		"recommended_level": 1,
-	},
-	{
-		"location_id": "outside_castle",
-		"location_name": "Outside Castle",
-		"mission_id": "outside_castle_defend_gate",
-		"title": "Defend the Gate",
-		"danger": 2,
-		"reward_gold": 18,
-		"recommended_level": 2,
-	},
-	{
-		"location_id": "lost_caverns",
-		"location_name": "Lost Caverns",
-		"mission_id": "lost_caverns_missing_scout",
-		"title": "Find the Missing Scout",
-		"danger": 3,
-		"reward_gold": 25,
-		"recommended_level": 3,
-	},
-]
-
 @onready var _mission_list: VBoxContainer = $MarginContainer/Content/ScrollContainer/MissionList
 @onready var _status_label: Label = $MarginContainer/Content/StatusLabel
 @onready var _back_button: Button = $MarginContainer/Content/BackButton
@@ -58,41 +19,86 @@ func _render_missions() -> void:
 	for child: Node in _mission_list.get_children():
 		child.queue_free()
 
-	var current_location_id: String = ""
-	for mission: Dictionary in MISSIONS:
-		var location_id: String = str(mission.get("location_id", "unknown"))
-		if location_id != current_location_id:
-			current_location_id = location_id
-			_add_location_header(str(mission.get("location_name", "Unknown Location")))
+	var current_giver_id: String = ""
+	var contracts: Array = MissionCatalog.get_available_contracts()
+	for contract_value: Variant in contracts:
+		var contract: Dictionary = contract_value
+		var giver_id: String = str(contract.get("giver_id", "unknown"))
+		if giver_id != current_giver_id:
+			current_giver_id = giver_id
+			_add_giver_header(str(contract.get("giver_name", "Unknown Giver")))
 
-		_add_mission_button(mission)
+		_add_contract_button(contract)
 
 
-func _add_location_header(location_name: String) -> void:
+func _add_giver_header(giver_name: String) -> void:
 	var label: Label = Label.new()
-	label.text = location_name
+	label.text = giver_name
 	label.add_theme_font_size_override("font_size", 20)
 	_mission_list.add_child(label)
 
 
-func _add_mission_button(mission: Dictionary) -> void:
+func _add_contract_button(contract: Dictionary) -> void:
 	var button: Button = Button.new()
-	button.text = "%s | Danger %s | Reward %s gold | Level %s" % [
-		mission.get("title", "Unknown Mission"),
-		mission.get("danger", 0),
-		mission.get("reward_gold", 0),
-		mission.get("recommended_level", 1),
+	button.text = "%s\nNeed: %s\nFind: %s | Reward: %s" % [
+		contract.get("title", "Unknown Contract"),
+		_format_requirements(contract.get("requirements", [])),
+		contract.get("location_name", "Unknown Location"),
+		_format_reward(contract.get("reward", {})),
 	]
 	button.pressed.connect(func() -> void:
-		_on_mission_pressed(mission)
+		_on_contract_pressed(contract)
 	)
 	_mission_list.add_child(button)
 
 
-func _on_mission_pressed(mission: Dictionary) -> void:
-	var mission_id: String = str(mission.get("mission_id", "unknown"))
-	_status_label.text = "Selected mission: %s" % mission.get("title", "Unknown Mission")
-	print("Selected mission: %s" % mission_id)
+func _on_contract_pressed(contract: Dictionary) -> void:
+	var contract_id: String = str(contract.get("contract_id", "unknown"))
+	_status_label.text = "%s wants: %s" % [
+		contract.get("giver_name", "Unknown Giver"),
+		_format_requirements(contract.get("requirements", [])),
+	]
+	print("Selected contract: %s" % contract_id)
+
+
+func _format_requirements(requirements_value: Variant) -> String:
+	if not requirements_value is Array:
+		return "Unknown items"
+
+	var parts: PackedStringArray = []
+	var requirements: Array = requirements_value
+	for requirement_value: Variant in requirements:
+		if not requirement_value is Dictionary:
+			continue
+
+		var requirement: Dictionary = requirement_value
+		parts.append("%s %s" % [
+			requirement.get("quantity", 1),
+			requirement.get("item_name", "Unknown Item"),
+		])
+
+	if parts.is_empty():
+		return "No items"
+	return ", ".join(parts)
+
+
+func _format_reward(reward_value: Variant) -> String:
+	if not reward_value is Dictionary:
+		return "None"
+
+	var reward: Dictionary = reward_value
+	var parts: PackedStringArray = []
+	var gold: int = int(reward.get("gold", 0))
+	if gold > 0:
+		parts.append("%s gold" % gold)
+
+	var items: Array = reward.get("items", [])
+	for item: Variant in items:
+		parts.append(str(item).replace("_", " "))
+
+	if parts.is_empty():
+		return "None"
+	return ", ".join(parts)
 
 
 func _on_back_button_pressed() -> void:
