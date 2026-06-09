@@ -40,11 +40,19 @@ func _add_giver_header(giver_name: String) -> void:
 
 func _add_contract_button(contract: Dictionary) -> void:
 	var button: Button = Button.new()
-	button.text = "%s\nNeed: %s\nFind: %s | Reward: %s" % [
+	var requirements: Array = _get_requirements(contract)
+	var can_turn_in: bool = GameState.has_required_items(requirements)
+	var turn_in_status: String = "Missing required items"
+	if can_turn_in:
+		turn_in_status = "Ready to turn in"
+
+	button.text = "%s\nNeed: %s\nHave: %s\nFind: %s | Reward: %s\n%s" % [
 		contract.get("title", "Unknown Contract"),
-		_format_requirements(contract.get("requirements", [])),
+		_format_requirements(requirements),
+		_format_owned_requirements(requirements),
 		contract.get("location_name", "Unknown Location"),
 		_format_reward(contract.get("reward", {})),
+		turn_in_status,
 	]
 	button.pressed.connect(func() -> void:
 		_on_contract_pressed(contract)
@@ -54,11 +62,20 @@ func _add_contract_button(contract: Dictionary) -> void:
 
 func _on_contract_pressed(contract: Dictionary) -> void:
 	var contract_id: String = str(contract.get("contract_id", "unknown"))
-	_status_label.text = "%s wants: %s" % [
-		contract.get("giver_name", "Unknown Giver"),
-		_format_requirements(contract.get("requirements", [])),
-	]
 	print("Selected contract: %s" % contract_id)
+	var requirements: Array = _get_requirements(contract)
+	if not GameState.has_required_items(requirements):
+		_status_label.text = "Missing items for: %s" % contract.get("title", "Unknown Contract")
+		return
+
+	var reward: Dictionary = _get_reward(contract)
+	GameState.consume_required_items(requirements)
+	GameState.add_local_reward(reward)
+	_status_label.text = "Turned in: %s | Reward: %s" % [
+		contract.get("title", "Unknown Contract"),
+		_format_reward(reward),
+	]
+	_render_missions()
 
 
 func _format_requirements(requirements_value: Variant) -> String:
@@ -74,6 +91,27 @@ func _format_requirements(requirements_value: Variant) -> String:
 		var requirement: Dictionary = requirement_value
 		parts.append("%s %s" % [
 			requirement.get("quantity", 1),
+			requirement.get("item_name", "Unknown Item"),
+		])
+
+	if parts.is_empty():
+		return "No items"
+	return ", ".join(parts)
+
+
+func _format_owned_requirements(requirements: Array) -> String:
+	var parts: PackedStringArray = []
+	for requirement_value: Variant in requirements:
+		if not requirement_value is Dictionary:
+			continue
+
+		var requirement: Dictionary = requirement_value
+		var item_id: String = str(requirement.get("item_id", ""))
+		var needed: int = int(requirement.get("quantity", 0))
+		var owned: int = GameState.get_item_count(item_id)
+		parts.append("%s/%s %s" % [
+			owned,
+			needed,
 			requirement.get("item_name", "Unknown Item"),
 		])
 
@@ -99,6 +137,20 @@ func _format_reward(reward_value: Variant) -> String:
 	if parts.is_empty():
 		return "None"
 	return ", ".join(parts)
+
+
+func _get_requirements(contract: Dictionary) -> Array:
+	var requirements: Variant = contract.get("requirements", [])
+	if requirements is Array:
+		return requirements
+	return []
+
+
+func _get_reward(contract: Dictionary) -> Dictionary:
+	var reward: Variant = contract.get("reward", {})
+	if reward is Dictionary:
+		return reward
+	return {}
 
 
 func _on_back_button_pressed() -> void:
